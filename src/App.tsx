@@ -4,6 +4,7 @@ import { AdminLogin } from './components/AdminLogin';
 import { AdminDashboard } from './components/AdminDashboard';
 import { StaffDashboard } from './components/StaffDashboard';
 import { CustomerPortal } from './components/CustomerPortal';
+import { HomePage } from './components/HomePage';
 import { getSession, signOut } from './utils/api';
 import { initializePlaceholders } from './utils/placeholders';
 import { Button } from './components/ui/button';
@@ -11,7 +12,7 @@ import { Settings, User } from 'lucide-react';
 import { Toaster } from './components/ui/sonner';
 
 export default function App() {
-  const [view, setView] = useState<'customer' | 'admin' | 'customerPortal'>('customer');
+  const [view, setView] = useState<'home' | 'customer' | 'admin' | 'customerPortal'>('home');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState<string>('');
   const [accessToken, setAccessToken] = useState('');
@@ -98,7 +99,9 @@ export default function App() {
 
   return (
     <>
-      {view === 'customer' ? (
+      {view === 'home' ? (
+        <HomePage onEnter={() => setView('customer')} />
+      ) : view === 'customer' ? (
         <CustomerView 
           onOpenCustomerPortal={() => setView('customerPortal')}
           onOpenAdmin={() => setView('admin')}

@@ -1,6 +1,6 @@
 import { ShoppingCart, X, Minus, Plus } from 'lucide-react';
 import { Button } from './ui/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from './ui/sheet';
 import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
 
@@ -29,6 +29,9 @@ export function CartDrawer({ items, onUpdateQuantity, onRemove, onCheckout, open
       <SheetContent className="px-[30px] pt-[50px] pb-[30px]">
         <SheetHeader>
           <SheetTitle>Your Cart</SheetTitle>
+          <SheetDescription>
+            {itemCount} {itemCount === 1 ? 'item' : 'items'} in your cart
+          </SheetDescription>
         </SheetHeader>
         <div className="flex flex-col h-full mt-6">
           {items.length === 0 ? (
