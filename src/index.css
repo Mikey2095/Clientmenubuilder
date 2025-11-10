@@ -1371,6 +1371,14 @@
     background-color: oklab(51.0938% -.0855206 -.00957963 / .1);
   }
 
+  .bg-\[\#6D1ED4\] {
+    background-color: #6d1ed4;
+  }
+
+  .bg-\[\#008CFF\] {
+    background-color: #008cff;
+  }
+
   .bg-\[\#ffefc2\] {
     background-color: #ffefc2;
   }
@@ -1954,6 +1962,10 @@
 
   .opacity-70 {
     opacity: .7;
+  }
+
+  .opacity-90 {
+    opacity: .9;
   }
 
   .shadow-lg {

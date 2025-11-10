@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -8,6 +8,7 @@ import { Separator } from './ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Checkbox } from './ui/checkbox';
 import { ScrollArea } from './ui/scroll-area';
+import { getBranding } from '../utils/api';
 
 interface CartItem {
   id: string;
@@ -35,6 +36,21 @@ export function CheckoutDialog({ open, onOpenChange, items, onSubmit }: Checkout
     isCatering: false,
     paymentMethod: 'zelle',
   });
+  const [branding, setBranding] = useState<{ zelleInfo?: string; venmoInfo?: string }>({});
+
+  useEffect(() => {
+    const fetchBrandingInfo = async () => {
+      try {
+        const result = await getBranding();
+        if (result.branding) {
+          setBranding(result.branding);
+        }
+      } catch (error) {
+        console.log('Error fetching branding:', error);
+      }
+    };
+    fetchBrandingInfo();
+  }, []);
 
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -258,6 +274,35 @@ export function CheckoutDialog({ open, onOpenChange, items, onSubmit }: Checkout
                 <strong>Important:</strong> Please send payment via {formData.paymentMethod === 'cash' ? 'cash on pickup' : formData.paymentMethod} before your order is confirmed. Your order will be prepared once payment is received and verified.
               </p>
             </div>
+            
+            {/* Show Zelle/Venmo Info when selected */}
+            {formData.paymentMethod === 'zelle' && branding.zelleInfo && (
+              <div className="p-4 bg-[#6D1ED4] text-white rounded-lg">
+                <p className="text-sm">
+                  <strong>Send Zelle payment to:</strong>
+                </p>
+                <p className="text-lg mt-2">
+                  {branding.zelleInfo}
+                </p>
+                <p className="text-xs mt-2 opacity-90">
+                  Please include your name and order details in the payment note.
+                </p>
+              </div>
+            )}
+            
+            {formData.paymentMethod === 'venmo' && branding.venmoInfo && (
+              <div className="p-4 bg-[#008CFF] text-white rounded-lg">
+                <p className="text-sm">
+                  <strong>Send Venmo payment to:</strong>
+                </p>
+                <p className="text-lg mt-2">
+                  {branding.venmoInfo}
+                </p>
+                <p className="text-xs mt-2 opacity-90">
+                  Please include your name and order details in the payment note.
+                </p>
+              </div>
+            )}
           </div>
 
           <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
