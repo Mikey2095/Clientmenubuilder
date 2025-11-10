@@ -4,7 +4,7 @@ import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Plus, Trash2 } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { toast } from 'sonner@2.0.3';
@@ -119,6 +119,9 @@ export function GalleryPanel({ accessToken }: GalleryPanelProps) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Add Gallery Image</DialogTitle>
+            <DialogDescription>
+              Add a new image to your gallery by providing the URL and an optional caption.
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">

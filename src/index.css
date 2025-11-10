@@ -1359,6 +1359,10 @@
     background-color: oklab(51.0938% -.0855206 -.00957963 / .1);
   }
 
+  .bg-\[rgb\(3\,187\,154\)\] {
+    background-color: #03bb9a;
+  }
+
   .bg-background {
     background-color: var(--background);
   }
@@ -1650,6 +1654,10 @@
     padding-block: calc(var(--spacing) * 4);
   }
 
+  .py-6 {
+    padding-block: calc(var(--spacing) * 6);
+  }
+
   .py-8 {
     padding-block: calc(var(--spacing) * 8);
   }
@@ -1804,7 +1812,7 @@
     color: #0f766e;
   }
 
-  .text-\[\#1a237e\] {
+  .text-\[\#1A237E\], .text-\[\#1a237e\] {
     color: #1a237e;
   }
 

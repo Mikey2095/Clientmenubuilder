@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { getAdminCode, saveAdminCode, createAdminUser } from '../utils/api';
 import { UserPlus, Key } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
@@ -144,6 +144,9 @@ export function AdminManagementPanel({ accessToken }: AdminManagementPanelProps)
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Create New Admin User</DialogTitle>
+            <DialogDescription>
+              Enter the details of the new admin user.
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleCreateAdmin} className="space-y-4">
             <div className="space-y-2">

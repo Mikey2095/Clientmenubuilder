@@ -187,7 +187,7 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
             {/* Cart Button */}
             <button
               onClick={() => setCartOpen(true)}
-              className="bg-white h-8 rounded-md border border-[rgba(0,166,244,0.2)] shadow-sm hover:shadow-md transition-shadow flex items-center justify-center gap-1.5 px-3"
+              className="bg-[rgb(3,187,154)] h-8 rounded-md border border-[rgba(0,166,244,0.2)] shadow-sm hover:shadow-md transition-shadow flex items-center justify-center gap-1.5 px-3 text-[#1A237E]"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16">
                 <g clipPath="url(#clip0_cart)">
@@ -197,12 +197,12 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
                 </g>
                 <defs>
                   <clipPath id="clip0_cart">
-                    <rect fill="white" height="16" width="16" />
+                    <rect fill="#1A237E" height="16" width="16" />
                   </clipPath>
                 </defs>
               </svg>
-              <span className="text-sm text-[#1a237e]">({getTotalItems()})</span>
-              <span className="text-sm text-[#1a237e]">Cart</span>
+              <span className="text-sm text-[#1A237E]">({getTotalItems()})</span>
+              <span className="text-sm text-[#1A237E]">Cart</span>
             </button>
             
             {/* Track Order Button */}

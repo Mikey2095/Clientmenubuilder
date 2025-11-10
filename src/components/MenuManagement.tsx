@@ -8,7 +8,7 @@ import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Checkbox } from './ui/checkbox';
 import { Plus, Trash2, Edit } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Badge } from './ui/badge';
 
 interface MenuItem {
@@ -195,6 +195,9 @@ export function MenuManagement({ accessToken }: MenuManagementProps) {
             <DialogTitle>
               {editingItem ? 'Edit Menu Item' : 'Add Menu Item'}
             </DialogTitle>
+            <DialogDescription>
+              {editingItem ? 'Make changes to your menu item here.' : 'Add a new menu item here.'}
+            </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">

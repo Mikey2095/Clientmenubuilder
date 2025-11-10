@@ -6,7 +6,7 @@ import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { CheckCircle2, Clock, ChefHat, Package, XCircle, Phone, Mail, Calendar, MessageSquare, Bell } from 'lucide-react';
 import { Separator } from './ui/separator';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { toast } from 'sonner@2.0.3';
@@ -80,17 +80,53 @@ export function OrdersPanel({ accessToken, onPendingCountChange }: OrdersPanelPr
       await updateOrderStatus(orderId, { status: newStatus }, accessToken);
       fetchOrders();
       
-      // Auto-notify customer when order is ready
+      // Auto-notify customer when order is ready via SMS
       if (newStatus === 'ready') {
         const order = orders.find(o => o.id === orderId);
-        if (order?.email) {
-          await handleSendMessage(orderId, `Your order is ready for pickup!`, 'ready');
-          toast.success('Order marked as ready and customer notified');
+        if (order) {
+          toast.success('Order marked as ready! Sending SMS notification to customer...');
         }
+      } else {
+        toast.success(`Order status updated to ${newStatus}`);
       }
     } catch (error) {
       console.log('Error updating order status:', error);
+      toast.error('Failed to update order status');
     }
+  };
+  
+  // Function to advance order to next stage
+  const advanceOrderStage = async (order: Order) => {
+    const stageFlow: Record<string, string> = {
+      pending: 'preparing',
+      preparing: 'ready',
+      ready: 'completed',
+    };
+    
+    const nextStatus = stageFlow[order.status];
+    if (nextStatus) {
+      await handleStatusChange(order.id, nextStatus);
+    }
+  };
+  
+  // Get the next stage button label
+  const getNextStageLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      pending: 'Start Cooking',
+      preparing: 'Mark Ready',
+      ready: 'Complete Order',
+    };
+    return labels[status] || 'Next Stage';
+  };
+  
+  // Get the next stage icon
+  const getNextStageIcon = (status: string) => {
+    const icons: Record<string, any> = {
+      pending: ChefHat,
+      preparing: Package,
+      ready: CheckCircle2,
+    };
+    return icons[status] || ChefHat;
   };
 
   const handleSendMessage = async (orderId: string, msg: string, type: string) => {
@@ -263,49 +299,63 @@ export function OrdersPanel({ accessToken, onPendingCountChange }: OrdersPanelPr
 
                 <Separator />
 
-                <div className="flex gap-2 flex-wrap">
-                  <Select
-                    value={order.status}
-                    onValueChange={(value) => handleStatusChange(order.id, value)}
-                  >
-                    <SelectTrigger className="w-48">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="confirmed">Confirmed</SelectItem>
-                      <SelectItem value="preparing">Preparing</SelectItem>
-                      <SelectItem value="ready">Ready</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                      <SelectItem value="cancelled">Cancelled</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="space-y-3">
+                  {/* Primary Action Button for Order Workflow */}
+                  {(order.status === 'pending' || order.status === 'preparing' || order.status === 'ready') && (
+                    <Button
+                      onClick={() => advanceOrderStage(order)}
+                      size="lg"
+                      className="w-full text-lg py-6"
+                      variant={order.status === 'ready' ? 'default' : 'default'}
+                    >
+                      {(() => {
+                        const Icon = getNextStageIcon(order.status);
+                        return (
+                          <>
+                            <Icon className="w-5 h-5 mr-2" />
+                            {getNextStageLabel(order.status)}
+                          </>
+                        );
+                      })()}
+                    </Button>
+                  )}
 
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => openMessageDialog(order, 'ready')}
-                  >
-                    <Bell className="w-4 h-4 mr-2" />
-                    Notify Ready
-                  </Button>
+                  {/* Secondary Actions */}
+                  <div className="flex gap-2 flex-wrap">
+                    <Select
+                      value={order.status}
+                      onValueChange={(value) => handleStatusChange(order.id, value)}
+                    >
+                      <SelectTrigger className="w-48">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="confirmed">Confirmed</SelectItem>
+                        <SelectItem value="preparing">Preparing</SelectItem>
+                        <SelectItem value="ready">Ready</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                        <SelectItem value="cancelled">Cancelled</SelectItem>
+                      </SelectContent>
+                    </Select>
 
-                  <Select
-                    onValueChange={(value) => value && openMessageDialog(order, value)}
-                  >
-                    <SelectTrigger className="w-48">
-                      <div className="flex items-center gap-2">
-                        <MessageSquare className="w-4 h-4" />
-                        <span>Contact Customer</span>
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="question">Ask Question</SelectItem>
-                      <SelectItem value="change">Order Change</SelectItem>
-                      <SelectItem value="delay">Delay Notification</SelectItem>
-                      <SelectItem value="custom">Custom Message</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <Select
+                      onValueChange={(value) => value && openMessageDialog(order, value)}
+                    >
+                      <SelectTrigger className="w-48">
+                        <div className="flex items-center gap-2">
+                          <MessageSquare className="w-4 h-4" />
+                          <span>Contact Customer</span>
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="question">Ask Question</SelectItem>
+                        <SelectItem value="change">Order Change</SelectItem>
+                        <SelectItem value="delay">Delay Notification</SelectItem>
+                        <SelectItem value="custom">Custom Message</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 {order.messages && order.messages.length > 0 && (
@@ -341,6 +391,9 @@ export function OrdersPanel({ accessToken, onPendingCountChange }: OrdersPanelPr
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Send Message to {selectedOrder?.customerName}</DialogTitle>
+            <DialogDescription>
+              Send a message to {selectedOrder?.customerName} regarding their order.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">

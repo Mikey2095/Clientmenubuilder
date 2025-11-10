@@ -544,6 +544,58 @@ app.patch('/make-server-e4f342e1/orders/:id', async (c) => {
       await kv.set(`receipt_${existingOrder.receiptCode}`, updatedOrder);
     }
 
+    // Send SMS notification when order is ready
+    if (updates.status === 'ready' && existingOrder.phone) {
+      try {
+        const twilioAccountSid = Deno.env.get('TWILIO_ACCOUNT_SID');
+        const twilioAuthToken = Deno.env.get('TWILIO_AUTH_TOKEN');
+        const twilioPhoneNumber = Deno.env.get('TWILIO_PHONE_NUMBER');
+        
+        if (twilioAccountSid && twilioAuthToken && twilioPhoneNumber) {
+          const branding = await kv.get('branding_settings') || {};
+          const businessName = branding.businessName || 'Restaurant';
+          
+          const smsMessage = `${businessName}: Your order is ready for pickup! Your receipt code is ${existingOrder.receiptCode}. Thank you!`;
+          
+          // Format phone number for Twilio (ensure it starts with +1 for US numbers)
+          let formattedPhone = existingOrder.phone.replace(/\D/g, '');
+          if (formattedPhone.length === 10) {
+            formattedPhone = '+1' + formattedPhone;
+          } else if (!formattedPhone.startsWith('+')) {
+            formattedPhone = '+' + formattedPhone;
+          }
+          
+          const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`;
+          const credentials = btoa(`${twilioAccountSid}:${twilioAuthToken}`);
+          
+          const twilioResponse = await fetch(twilioUrl, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Basic ${credentials}`,
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+              To: formattedPhone,
+              From: twilioPhoneNumber,
+              Body: smsMessage,
+            }),
+          });
+          
+          if (twilioResponse.ok) {
+            console.log(`SMS sent successfully to ${formattedPhone} for order ${orderId}`);
+          } else {
+            const errorText = await twilioResponse.text();
+            console.log(`Failed to send SMS: ${errorText}`);
+          }
+        } else {
+          console.log('Twilio credentials not configured, skipping SMS notification');
+        }
+      } catch (smsError) {
+        console.log('Error sending SMS notification:', smsError);
+        // Don't fail the order update if SMS fails
+      }
+    }
+
     return c.json({ success: true, order: updatedOrder });
   } catch (error) {
     console.log('Error updating order:', error);

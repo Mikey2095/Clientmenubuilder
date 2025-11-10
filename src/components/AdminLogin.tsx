@@ -83,7 +83,7 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
               <ChefHat className="w-8 h-8 text-white" />
             </div>
           </div>
-          <CardTitle>Admin Portal</CardTitle>
+          <CardTitle>Business Portal</CardTitle>
           <CardDescription>
             Manage your menu and orders
           </CardDescription>

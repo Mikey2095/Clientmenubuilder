@@ -10,7 +10,7 @@ import { GalleryPanel } from './GalleryPanel';
 import { UserManagement } from './UserManagement';
 import { Badge } from './ui/badge';
 import { getSession } from '../utils/api';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { AdminCustomerPortalPreview } from './AdminCustomerPortalPreview';
 
 interface AdminDashboardProps {
@@ -137,7 +137,7 @@ export function AdminDashboard({ onLogout, accessToken, onPreview }: AdminDashbo
 
       {/* Customer Portal Preview Dialog */}
       <Dialog open={showCustomerPortalPreview} onOpenChange={setShowCustomerPortalPreview}>
-        <DialogContent className="max-w-[95vw] w-full max-h-[95vh] h-full overflow-hidden p-0">
+        <DialogContent className="max-w-[95vw] w-full max-h-[95vh] h-full overflow-hidden p-0" aria-describedby={undefined}>
           <AdminCustomerPortalPreview 
             accessToken={accessToken}
             onBack={() => setShowCustomerPortalPreview(false)} 

@@ -73,9 +73,15 @@ export function CartDrawer({ items, onUpdateQuantity, onRemove, onCheckout, open
               </div>
               <div className="pt-4 space-y-4">
                 <Separator />
-                <div className="flex justify-between">
-                  <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Subtotal</span>
+                    <span>${total.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between font-semibold text-lg">
+                    <span>Total</span>
+                    <span>${total.toFixed(2)}</span>
+                  </div>
                 </div>
                 <Button onClick={onCheckout} className="w-full">
                   Proceed to Checkout
