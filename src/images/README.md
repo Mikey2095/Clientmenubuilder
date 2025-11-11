@@ -1,15 +1,17 @@
 # Image Assets for Graciela's Cocina
 
-Upload the following **3 images** to this folder:
+## ✅ All 4 Images Uploaded
 
-## Required Images
+All required images are now in this folder:
 
-1. **logo-splash.png** - Large Graciela's Cocina splash screen logo with skull and floral border
-2. **floral-top-right.png** - Floral decoration (Mexican folk art flowers and leaves)
-3. **logo-skull-small.png** - Small decorative skull logo
+1. **logo-splash.jpg** - Large Graciela's Cocina splash screen logo (home page banner) ✅
+2. **logo-skull-small.jpg** - Small decorative skull logo (header logo on menu page) ✅
+3. **floral-top-left.jpg** - Floral decoration for top left corner ✅
+4. **floral-top-right.jpg** - Floral decoration for top right corner ✅
 
-## Upload Instructions
+## Note
 
-1. Save the 3 images from your Figma design with the exact filenames above
-2. Upload them to this `/images` folder in your GitHub repo
-3. Commit and push to deploy
+These images are currently using Figma assets. When deploying to GitHub/Vercel:
+- Export these 4 images from Figma as JPG files
+- Replace the files in this folder with the actual JPG exports
+- Keep the exact same filenames

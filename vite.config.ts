@@ -19,6 +19,9 @@
         'input-otp@1.4.2': 'input-otp',
         'figma:asset/dc5fb2ba7241e2ea5cc8f4df51278d54750db678.png': path.resolve(__dirname, './src/assets/dc5fb2ba7241e2ea5cc8f4df51278d54750db678.png'),
         'figma:asset/d70d43b04ca9941060c01e5fc4c5b59cfbf0ed32.png': path.resolve(__dirname, './src/assets/d70d43b04ca9941060c01e5fc4c5b59cfbf0ed32.png'),
+        'figma:asset/ba6563ab1ac8819df894388173cfb3b21ad6aa53.png': path.resolve(__dirname, './src/assets/ba6563ab1ac8819df894388173cfb3b21ad6aa53.png'),
+        'figma:asset/694b489421c91d667c37566c827bce0e881ed84b.png': path.resolve(__dirname, './src/assets/694b489421c91d667c37566c827bce0e881ed84b.png'),
+        'figma:asset/6662d1224e2c29823bad47ef2b37e7f039f7ccdf.png': path.resolve(__dirname, './src/assets/6662d1224e2c29823bad47ef2b37e7f039f7ccdf.png'),
         'figma:asset/4dde54d53b287ff73e1b0784442ac97b71218e45.png': path.resolve(__dirname, './src/assets/4dde54d53b287ff73e1b0784442ac97b71218e45.png'),
         'figma:asset/1a9a89e283a6f50f101e43fd04178d46d9953697.png': path.resolve(__dirname, './src/assets/1a9a89e283a6f50f101e43fd04178d46d9953697.png'),
         'embla-carousel-react@8.6.0': 'embla-carousel-react',
@@ -57,7 +60,7 @@
     },
     build: {
       target: 'esnext',
-      outDir: 'dist',
+      outDir: 'build',
     },
     server: {
       port: 3000,

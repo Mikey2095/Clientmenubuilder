@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import { useEffect } from 'react';
-import homeImage from '../images/logo-splash.png';
+import homeImage from 'figma:asset/6662d1224e2c29823bad47ef2b37e7f039f7ccdf.png';
 
 interface HomePageProps {
   onEnter: () => void;
