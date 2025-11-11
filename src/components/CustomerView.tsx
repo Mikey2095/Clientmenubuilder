@@ -12,9 +12,9 @@ import { ImageWithFallback } from './figma/ImageWithFallback';
 import { Card } from './ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import svgPaths from '../imports/svg-2gjo4daah7';
-import skullLogo from 'figma:asset/6662d1224e2c29823bad47ef2b37e7f039f7ccdf.png';
-import floralTopLeft from 'figma:asset/694b489421c91d667c37566c827bce0e881ed84b.png';
-import floralTopRight from 'figma:asset/ba6563ab1ac8819df894388173cfb3b21ad6aa53.png';
+import skullLogo from '../images/logo-skull-small.jpg';
+import floralTopLeft from '../images/floral-top-left.jpg';
+import floralTopRight from '../images/floral-top-right.jpg';
 import { HeroCarousel } from './HeroCarousel';
 
 export interface CartItem {

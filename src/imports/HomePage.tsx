@@ -1,5 +1,5 @@
 import svgPaths from "./svg-j7r54c2sf5";
-import imgImage from "figma:asset/ba6563ab1ac8819df894388173cfb3b21ad6aa53.png";
+import imgImage from "../images/floral-top-right.jpg";
 
 function Image() {
   return (

@@ -1,5 +1,5 @@
 import svgPaths from "./svg-uk1hassfri";
-import imgImage from "figma:asset/694b489421c91d667c37566c827bce0e881ed84b.png";
+import imgImage from "../images/floral-top-left.jpg";
 
 function Image() {
   return (
