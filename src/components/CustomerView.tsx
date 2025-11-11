@@ -16,6 +16,7 @@ import skullLogo from '../images/logo-skull-small.jpg';
 import floralTopLeft from '../images/floral-top-left.png';
 import floralTopRight from '../images/floral-top-right.png';
 import { HeroCarousel } from './HeroCarousel';
+//made changes to jpf to png. need to make sure the logo skull small is connected. still not connecting for some reason
 
 export interface CartItem {
   id: string;
