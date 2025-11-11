@@ -13,8 +13,8 @@ import { Card } from './ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import svgPaths from '../imports/svg-2gjo4daah7';
 import skullLogo from '../images/logo-skull-small.jpg';
-import floralTopLeft from '../images/floral-top-left.jpg';
-import floralTopRight from '../images/floral-top-right.jpg';
+import floralTopLeft from '../images/floral-top-left.png';
+import floralTopRight from '../images/floral-top-right.png';
 import { HeroCarousel } from './HeroCarousel';
 
 export interface CartItem {
