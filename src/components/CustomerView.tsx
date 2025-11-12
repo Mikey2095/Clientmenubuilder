@@ -184,12 +184,26 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3 flex items-center justify-between gap-2">
           {/* Logo and Business Name */}
           <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
-            {customLogo && (
+            {customLogo ? (
               <img 
                 src={customLogo} 
                 alt="Logo" 
                 className="w-10 h-10 sm:w-12 sm:h-12 object-contain shrink-0"
               />
+            ) : (
+              // Default skull icon for Mexican theme
+              <svg 
+                className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 text-[#0f766e]" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="1.5"
+              >
+                <path d="M12 2C6.5 2 2 6.5 2 12c0 3.5 1.5 6.5 4 8.5V22l3-2 3 2 3-2 3 2v-1.5c2.5-2 4-5 4-8.5 0-5.5-4.5-10-10-10z" />
+                <circle cx="9" cy="11" r="1.5" fill="currentColor" />
+                <circle cx="15" cy="11" r="1.5" fill="currentColor" />
+                <path d="M9 15c.5.5 1.5 1 3 1s2.5-.5 3-1" strokeLinecap="round" />
+              </svg>
             )}
             <div className="flex flex-col min-w-0">
               <h1 className="text-base sm:text-xl text-[#0f766e] leading-tight truncate">{businessName}</h1>

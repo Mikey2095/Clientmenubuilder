@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getBranding, saveBranding } from '../utils/api';
+import { getBranding, saveBranding, uploadGalleryFile } from '../utils/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -7,6 +7,7 @@ import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { ColorThemeEditor } from './ColorThemeEditor';
 import { Separator } from './ui/separator';
+import { toast } from 'sonner';
 
 interface BrandingPanelProps {
   accessToken: string;
@@ -30,6 +31,7 @@ export function BrandingPanel({ accessToken }: BrandingPanelProps) {
     menuIcon: '',
   });
   const [saving, setSaving] = useState(false);
+  const [uploadingIcon, setUploadingIcon] = useState(false);
 
   useEffect(() => {
     const fetchBranding = async () => {
@@ -50,12 +52,35 @@ export function BrandingPanel({ accessToken }: BrandingPanelProps) {
     setSaving(true);
     try {
       await saveBranding(formData, accessToken);
-      alert('Branding saved successfully!');
+      toast.success('Branding saved successfully!');
     } catch (error) {
       console.log('Error saving branding:', error);
-      alert('Failed to save branding');
+      toast.error('Failed to save branding');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleIconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploadingIcon(true);
+      toast.info('Uploading icon...');
+      const result = await uploadGalleryFile(file, 'Menu Icon', accessToken);
+      
+      if (result.url) {
+        setFormData({ ...formData, menuIcon: result.url });
+        toast.success('Icon uploaded successfully!');
+      } else {
+        toast.error('Failed to upload icon');
+      }
+    } catch (error) {
+      console.error('Error uploading icon:', error);
+      toast.error('Error uploading icon');
+    } finally {
+      setUploadingIcon(false);
     }
   };
 
@@ -220,17 +245,34 @@ export function BrandingPanel({ accessToken }: BrandingPanelProps) {
             <Separator />
 
             <div className="space-y-2">
-              <Label htmlFor="menuIcon">Menu Icon/Logo URL</Label>
-              <Input
-                id="menuIcon"
-                type="url"
-                value={formData.menuIcon}
-                onChange={(e) => setFormData({ ...formData, menuIcon: e.target.value })}
-                placeholder="https://..."
-              />
+              <Label htmlFor="menuIcon">Menu Icon/Logo</Label>
+              <p className="text-sm text-gray-500">Upload a skull icon or logo for the header (recommended size: 48x48px)</p>
+              
+              {/* File Upload Button */}
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => document.getElementById('iconUploadInput')?.click()}
+                  disabled={uploadingIcon}
+                  className="w-full"
+                >
+                  {uploadingIcon ? 'Uploading...' : 'Choose File'}
+                </Button>
+                <input
+                  id="iconUploadInput"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleIconUpload}
+                  className="hidden"
+                />
+              </div>
+
+              {/* Preview */}
               {formData.menuIcon && (
-                <div className="mt-2">
-                  <img src={formData.menuIcon} alt="Menu icon preview" className="h-12 object-contain" />
+                <div className="mt-3 p-3 border border-gray-200 rounded-lg bg-gray-50">
+                  <p className="text-xs text-gray-600 mb-2">Current Icon:</p>
+                  <img src={formData.menuIcon} alt="Menu icon preview" className="h-12 w-12 object-contain" />
                 </div>
               )}
             </div>
