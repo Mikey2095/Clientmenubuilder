@@ -175,8 +175,8 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
   const carouselImages = branding.carouselImages || (heroImage ? [heroImage] : []);
   
   // Floral decorations
-  const floralTopLeft = 'https://images.unsplash.com/photo-1576519674022-dd3bfd0fdd7f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtZXhpY2FuJTIwZmxvcmFsJTIwZGVjb3JhdGlvbiUyMHBhdHRlcm58ZW58MXx8fHwxNzYyOTE3NjIwfDA&ixlib=rb-4.1.0&q=80&w=1080';
-  const floralTopRight = 'https://images.unsplash.com/photo-1676920450303-62bfeafde1f5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2xvcmZ1bCUyMG1leGljYW4lMjBmbG93ZXJzfGVufDF8fHx8MTc2MjkxNzYyMHww&ixlib=rb-4.1.0&q=80&w=1080';
+  const floralTopLeft = 'floral-top-left.png';
+  const floralTopRight = 'floral-top-right.png';
 
   return (
     <div className="bg-white relative min-h-screen">
