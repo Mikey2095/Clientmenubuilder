@@ -18,6 +18,7 @@ export default function App() {
   const [accessToken, setAccessToken] = useState('');
   const [checkingSession, setCheckingSession] = useState(true);
   const [placeholdersInitialized, setPlaceholdersInitialized] = useState(false);
+  const [customerViewKey, setCustomerViewKey] = useState(0);
 
   useEffect(() => {
     // Check if there's an existing session
@@ -75,9 +76,15 @@ export default function App() {
       setIsAuthenticated(false);
       setAccessToken('');
       setView('customer');
+      setCustomerViewKey(prev => prev + 1); // Force refresh customer view
     } catch (error) {
       console.log('Logout error:', error);
     }
+  };
+
+  const navigateToCustomerView = () => {
+    setView('customer');
+    setCustomerViewKey(prev => prev + 1); // Force refresh customer view
   };
 
   if (checkingSession) {
@@ -100,9 +107,10 @@ export default function App() {
   return (
     <>
       {view === 'home' ? (
-        <HomePage onEnter={() => setView('customer')} />
+        <HomePage onEnter={navigateToCustomerView} />
       ) : view === 'customer' ? (
         <CustomerView 
+          key={customerViewKey}
           onOpenCustomerPortal={() => setView('customerPortal')}
           onOpenAdmin={() => setView('admin')}
         />
@@ -113,7 +121,7 @@ export default function App() {
               <AdminDashboard 
                 onLogout={handleLogout} 
                 accessToken={accessToken}
-                onPreview={() => setView('customer')}
+                onPreview={navigateToCustomerView}
               />
             ) : (
               <StaffDashboard 
@@ -125,7 +133,7 @@ export default function App() {
             <div className="relative">
               <AdminLogin onLogin={handleLogin} />
               <Button
-                onClick={() => setView('customer')}
+                onClick={navigateToCustomerView}
                 className="fixed top-4 left-4 z-50"
                 size="sm"
                 variant="outline"

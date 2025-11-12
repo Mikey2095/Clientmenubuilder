@@ -68,17 +68,34 @@ export function BrandingPanel({ accessToken }: BrandingPanelProps) {
     try {
       setUploadingIcon(true);
       toast.info('Uploading icon...');
+      console.log('Starting icon upload:', file.name, file.type, file.size);
+      
       const result = await uploadGalleryFile(file, 'Menu Icon', accessToken);
+      console.log('Upload result:', result);
       
       if (result.url) {
-        setFormData({ ...formData, menuIcon: result.url });
+        const updatedFormData = { ...formData, menuIcon: result.url };
+        setFormData(updatedFormData);
         toast.success('Icon uploaded successfully!');
+        
+        // Auto-save the branding after successful upload
+        try {
+          await saveBranding(updatedFormData, accessToken);
+          toast.success('Icon saved to branding!');
+        } catch (saveError) {
+          console.error('Error auto-saving branding:', saveError);
+          toast.error('Icon uploaded but failed to save. Please click Save Branding.');
+        }
+      } else if (result.error) {
+        console.error('Upload error from server:', result.error);
+        toast.error(`Failed to upload icon: ${result.error}`);
       } else {
-        toast.error('Failed to upload icon');
+        console.error('Unexpected response:', result);
+        toast.error('Failed to upload icon - unexpected response');
       }
     } catch (error) {
       console.error('Error uploading icon:', error);
-      toast.error('Error uploading icon');
+      toast.error(`Error uploading icon: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setUploadingIcon(false);
     }
