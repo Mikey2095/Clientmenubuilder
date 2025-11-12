@@ -195,10 +195,10 @@ export function AdminDashboard({ onLogout, accessToken, onPreview }: AdminDashbo
       {/* Customer Portal Preview Dialog */}
       <Dialog open={showCustomerPortalPreview} onOpenChange={setShowCustomerPortalPreview}>
         <DialogContent className="max-w-[95vw] w-full max-h-[95vh] h-full overflow-hidden p-0">
-          <div className="sr-only">
+          <DialogHeader className="sr-only">
             <DialogTitle>Customer Portal Preview</DialogTitle>
             <DialogDescription>Preview of the customer portal interface</DialogDescription>
-          </div>
+          </DialogHeader>
           <AdminCustomerPortalPreview 
             accessToken={accessToken}
             onBack={() => setShowCustomerPortalPreview(false)} 
