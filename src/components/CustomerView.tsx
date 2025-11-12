@@ -13,6 +13,9 @@ import { FAQSection } from './FAQSection';
 import { toast } from 'sonner@2.0.3';
 import svgPaths from '../imports/svg-2gjo4daah7';
 import { HeroCarousel } from './HeroCarousel';
+// Import floral decoration images
+import floralTopLeft from '../images/floral-top-left.png';
+import floralTopRight from '../images/floral-top-right.png';
 
 interface MenuItem {
   id: string;
@@ -174,10 +177,6 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
   const customLogo = branding.logo;
   const carouselImages = branding.carouselImages || (heroImage ? [heroImage] : []);
   
-  // Floral decorations - connected to GitHub static assets in public folder
-  const floralTopLeft = '/floral-top-left.png';
-  const floralTopRight = '/floral-top-right.png';
-
   return (
     <div className="bg-white relative min-h-screen">
       {/* Header */}
