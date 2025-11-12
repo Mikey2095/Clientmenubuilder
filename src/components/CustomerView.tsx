@@ -46,6 +46,7 @@ export interface Branding {
   logo?: string;
   heroImage?: string;
   carouselImages?: string[]; // Array of image/video URLs for carousel
+  menuIcon?: string; // URL for the uploaded skull icon
 }
 
 interface GalleryImage {
@@ -174,7 +175,7 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
   const businessName = branding.businessName || 'Menú Mexicano';
   const tagline = branding.tagline || 'Authentic Mexican Cuisine';
   const heroImage = branding.heroImage;
-  const customLogo = branding.logo;
+  const customLogo = branding.menuIcon || branding.logo; // Use menuIcon (uploaded skull) or fallback to logo
   const carouselImages = branding.carouselImages || (heroImage ? [heroImage] : []);
   
   return (
