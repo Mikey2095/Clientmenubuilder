@@ -14,6 +14,26 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 );
 
+// Initialize storage bucket
+async function initializeStorage() {
+  const bucketName = 'make-e4f342e1-gallery';
+  try {
+    const { data: buckets } = await supabase.storage.listBuckets();
+    const bucketExists = buckets?.some(bucket => bucket.name === bucketName);
+    if (!bucketExists) {
+      await supabase.storage.createBucket(bucketName, {
+        public: false,
+        fileSizeLimit: 10485760, // 10MB
+      });
+      console.log('Gallery storage bucket created');
+    }
+  } catch (error) {
+    console.log('Storage initialization error:', error);
+  }
+}
+
+initializeStorage();
+
 // Admin signup
 app.post('/make-server-e4f342e1/admin/signup', async (c) => {
   try {
@@ -204,13 +224,14 @@ app.post('/make-server-e4f342e1/gallery', async (c) => {
       return c.json({ error: 'Unauthorized - Admin access required' }, 401);
     }
 
-    const { url, caption } = await c.req.json();
+    const { url, caption, type } = await c.req.json();
     const id = `gallery_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
     await kv.set(id, {
       id,
       url,
       caption,
+      type: type || 'image',
       createdAt: new Date().toISOString(),
     });
 
@@ -218,6 +239,83 @@ app.post('/make-server-e4f342e1/gallery', async (c) => {
   } catch (error) {
     console.log('Error saving gallery image:', error);
     return c.json({ error: 'Failed to save image' }, 500);
+  }
+});
+
+// Upload gallery file (admin only)
+app.post('/make-server-e4f342e1/gallery/upload', async (c) => {
+  try {
+    const accessToken = c.req.header('Authorization')?.split(' ')[1];
+    const { data: { user }, error: authError } = await supabase.auth.getUser(accessToken);
+
+    if (!user || authError) {
+      return c.json({ error: 'Unauthorized - Admin access required' }, 401);
+    }
+
+    const formData = await c.req.formData();
+    const file = formData.get('file') as File;
+    const caption = formData.get('caption') as string;
+    const type = formData.get('type') as string;
+
+    if (!file) {
+      return c.json({ error: 'No file provided' }, 400);
+    }
+
+    // Validate file type
+    const isImage = file.type.startsWith('image/');
+    const isVideo = file.type.startsWith('video/');
+    
+    if (!isImage && !isVideo) {
+      return c.json({ error: 'Invalid file type. Only images and videos are allowed.' }, 400);
+    }
+
+    // Validate file size (10MB limit)
+    if (file.size > 10485760) {
+      return c.json({ error: 'File size must be less than 10MB' }, 400);
+    }
+
+    const bucketName = 'make-e4f342e1-gallery';
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+
+    // Upload to Supabase Storage
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from(bucketName)
+      .upload(fileName, file, {
+        contentType: file.type,
+        cacheControl: '3600',
+      });
+
+    if (uploadError) {
+      console.log('File upload error:', uploadError);
+      return c.json({ error: 'Failed to upload file' }, 500);
+    }
+
+    // Create a signed URL that expires in 10 years (long-lived)
+    const { data: signedUrlData } = await supabase.storage
+      .from(bucketName)
+      .createSignedUrl(fileName, 315360000); // 10 years in seconds
+
+    if (!signedUrlData) {
+      return c.json({ error: 'Failed to create signed URL' }, 500);
+    }
+
+    const id = `gallery_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    await kv.set(id, {
+      id,
+      url: signedUrlData.signedUrl,
+      caption: caption || '',
+      type: type || (isImage ? 'image' : 'video'),
+      fileName: fileName,
+      bucketName: bucketName,
+      createdAt: new Date().toISOString(),
+    });
+
+    return c.json({ success: true, id, url: signedUrlData.signedUrl });
+  } catch (error) {
+    console.log('Error uploading gallery file:', error);
+    return c.json({ error: 'Failed to upload file' }, 500);
   }
 });
 

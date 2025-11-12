@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getMenu, saveMenuItem, deleteMenuItem } from '../utils/api';
+import { getMenu, saveMenuItem, deleteMenuItem, getBranding, saveBranding, uploadGalleryFile } from '../utils/api';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -7,9 +7,10 @@ import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Checkbox } from './ui/checkbox';
-import { Plus, Trash2, Edit } from 'lucide-react';
+import { Plus, Trash2, Edit, Pencil } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Badge } from './ui/badge';
+import { toast } from 'sonner';
 
 interface MenuItem {
   id?: string;
@@ -28,12 +29,17 @@ interface MenuManagementProps {
 }
 
 const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-const CATEGORIES = ['Appetizers', 'Tacos', 'Burritos', 'Enchiladas', 'Quesadillas', 'Sides', 'Desserts', 'Drinks'];
+const DEFAULT_CATEGORIES = ['Appetizers', 'Tacos', 'Burritos', 'Enchiladas', 'Quesadillas', 'Sides', 'Desserts', 'Drinks'];
 
 export function MenuManagement({ accessToken }: MenuManagementProps) {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
+  const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES);
+  const [editingCategoryIndex, setEditingCategoryIndex] = useState<number | null>(null);
+  const [categoryEditValue, setCategoryEditValue] = useState('');
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState<MenuItem>({
     name: '',
     description: '',
@@ -117,6 +123,62 @@ export function MenuManagement({ accessToken }: MenuManagementProps) {
     return acc;
   }, {} as Record<string, MenuItem[]>);
 
+  const handleOpenCategoryDialog = () => {
+    setCategoryDialogOpen(true);
+  };
+
+  const handleAddCategory = () => {
+    if (categoryEditValue.trim() && !categories.includes(categoryEditValue.trim())) {
+      setCategories([...categories, categoryEditValue.trim()]);
+      setCategoryEditValue('');
+    }
+  };
+
+  const handleEditCategory = (index: number) => {
+    setEditingCategoryIndex(index);
+    setCategoryEditValue(categories[index]);
+    handleOpenCategoryDialog();
+  };
+
+  const handleSaveCategory = () => {
+    if (editingCategoryIndex !== null && categoryEditValue.trim()) {
+      const newCategories = [...categories];
+      newCategories[editingCategoryIndex] = categoryEditValue.trim();
+      setCategories(newCategories);
+      setEditingCategoryIndex(null);
+      setCategoryEditValue('');
+    }
+  };
+
+  const handleDeleteCategory = (index: number) => {
+    const newCategories = [...categories];
+    newCategories.splice(index, 1);
+    setCategories(newCategories);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploading(true);
+      toast.info('Uploading image...');
+      const result = await uploadGalleryFile(file, formData.name || 'Menu item', accessToken);
+      
+      if (result.url) {
+        setFormData({ ...formData, image: result.url });
+        toast.success('Image uploaded successfully!');
+      } else {
+        toast.error('Failed to upload image');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast.error('Error uploading image');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -135,7 +197,7 @@ export function MenuManagement({ accessToken }: MenuManagementProps) {
         </Card>
       ) : (
         <div className="space-y-6">
-          {CATEGORIES.filter(cat => groupedItems[cat]).map((category) => (
+          {categories.filter(cat => groupedItems[cat]).map((category) => (
             <div key={category}>
               <h3 className="mb-4">{category}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -243,7 +305,7 @@ export function MenuManagement({ accessToken }: MenuManagementProps) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {CATEGORIES.map((cat) => (
+                    {categories.map((cat) => (
                       <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                     ))}
                   </SelectContent>
@@ -255,11 +317,17 @@ export function MenuManagement({ accessToken }: MenuManagementProps) {
               <Label htmlFor="image">Image URL</Label>
               <Input
                 id="image"
-                type="url"
-                placeholder="https://..."
-                value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                type="file"
+                accept="image/*"
+                disabled={uploading}
+                onChange={handleImageUpload}
               />
+              {formData.image && (
+                <div className="mt-2">
+                  <img src={formData.image} alt="Preview" className="max-w-xs rounded-md" />
+                  <p className="text-xs text-muted-foreground mt-1">Current image</p>
+                </div>
+              )}
             </div>
 
             <div className="flex items-center space-x-2">
@@ -316,6 +384,71 @@ export function MenuManagement({ accessToken }: MenuManagementProps) {
           </form>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {editingCategoryIndex !== null ? 'Edit Category' : 'Add Category'}
+            </DialogTitle>
+            <DialogDescription>
+              {editingCategoryIndex !== null ? 'Make changes to your category here.' : 'Add a new category here.'}
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={editingCategoryIndex !== null ? handleSaveCategory : handleAddCategory} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="categoryEditValue">Category Name *</Label>
+              <Input
+                id="categoryEditValue"
+                required
+                value={categoryEditValue}
+                onChange={(e) => setCategoryEditValue(e.target.value)}
+              />
+            </div>
+
+            <div className="flex gap-2 pt-4">
+              <Button type="submit" className="flex-1">
+                {editingCategoryIndex !== null ? 'Update Category' : 'Add Category'}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => setCategoryDialogOpen(false)}>
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <div className="flex justify-between items-center">
+        <h2>Categories Management</h2>
+        <Button onClick={() => handleOpenCategoryDialog()}>
+          <Plus className="w-4 h-4 mr-2" />
+          Add Category
+        </Button>
+      </div>
+
+      <div className="space-y-4">
+        {categories.map((category, index) => (
+          <div key={index} className="flex justify-between items-center">
+            <span>{category}</span>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => handleEditCategory(index)}
+              >
+                <Pencil className="w-4 h-4" />
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => handleDeleteCategory(index)}
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

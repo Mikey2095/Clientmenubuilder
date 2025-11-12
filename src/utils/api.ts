@@ -130,14 +130,14 @@ export async function getGallery() {
   return await response.json();
 }
 
-export async function saveGalleryImage(url: string, caption: string, accessToken: string) {
+export async function saveGalleryImage(url: string, caption: string, accessToken: string, type?: string) {
   const response = await fetch(`${API_BASE}/gallery`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${accessToken}`,
     },
-    body: JSON.stringify({ url, caption }),
+    body: JSON.stringify({ url, caption, type: type || 'image' }),
   });
   return await response.json();
 }
@@ -148,6 +148,22 @@ export async function deleteGalleryImage(id: string, accessToken: string) {
     headers: {
       'Authorization': `Bearer ${accessToken}`,
     },
+  });
+  return await response.json();
+}
+
+export async function uploadGalleryFile(file: File, caption: string, accessToken: string) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('caption', caption);
+  formData.append('type', file.type.startsWith('video/') ? 'video' : 'image');
+  
+  const response = await fetch(`${API_BASE}/gallery/upload`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+    },
+    body: formData,
   });
   return await response.json();
 }

@@ -1,22 +1,30 @@
 import { useState, useEffect } from 'react';
-import { MenuCard, MenuItem } from './MenuCard';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
+import { Card } from './ui/card';
+import { Button } from './ui/button';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
+import { ShoppingCart, Package, Menu as MenuIcon } from 'lucide-react';
+import { getMenu, getBranding, getGallery, placeOrder } from '../utils/api';
+import { ImageWithFallback } from './figma/ImageWithFallback';
 import { CartDrawer } from './CartDrawer';
 import { CheckoutDialog } from './CheckoutDialog';
 import { FAQSection } from './FAQSection';
-import { getMenu, placeOrder, getBranding, getGallery } from '../utils/api';
-import { Button } from './ui/button';
-import { ShoppingCart, Menu as MenuIcon, User, Package } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { toast } from 'sonner@2.0.3';
-import { ImageWithFallback } from './figma/ImageWithFallback';
-import { Card } from './ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import svgPaths from '../imports/svg-2gjo4daah7';
-import skullLogo from '../images/logo-skull-small.png';
-import floralTopLeft from '../images/floral-top-left.png';
-import floralTopRight from '../images/floral-top-right.png';
 import { HeroCarousel } from './HeroCarousel';
-//made changes to jpf to png. need to make sure the logo skull small is connected. still not connecting for some reason
+
+interface MenuItem {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  imageUrl?: string;
+  isSpecial: boolean;
+  specialDays: string[];
+  available: boolean;
+}
 
 export interface CartItem {
   id: string;
@@ -42,6 +50,7 @@ interface GalleryImage {
   url: string;
   caption: string;
   createdAt: string;
+  type?: 'image' | 'video';
 }
 
 interface CustomerViewProps {
@@ -164,27 +173,33 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
   const heroImage = branding.heroImage;
   const customLogo = branding.logo;
   const carouselImages = branding.carouselImages || (heroImage ? [heroImage] : []);
+  
+  // Floral decorations
+  const floralTopLeft = 'https://images.unsplash.com/photo-1576519674022-dd3bfd0fdd7f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtZXhpY2FuJTIwZmxvcmFsJTIwZGVjb3JhdGlvbiUyMHBhdHRlcm58ZW58MXx8fHwxNzYyOTE3NjIwfDA&ixlib=rb-4.1.0&q=80&w=1080';
+  const floralTopRight = 'https://images.unsplash.com/photo-1676920450303-62bfeafde1f5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2xvcmZ1bCUyMG1leGljYW4lMjBmbG93ZXJzfGVufDF8fHx8MTc2MjkxNzYyMHww&ixlib=rb-4.1.0&q=80&w=1080';
 
   return (
     <div className="bg-white relative min-h-screen">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-8 py-3 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3 flex items-center justify-between gap-2">
           {/* Logo and Business Name */}
-          <div className="flex items-center gap-4">
-            <img 
-              src={customLogo || skullLogo} 
-              alt="Logo" 
-              className="w-12 h-12 object-contain"
-            />
-            <div className="flex flex-col">
-              <h1 className="text-xl text-[#0f766e] leading-tight">{businessName}</h1>
-              <p className="text-xs text-gray-600">{tagline}</p>
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+            {customLogo && (
+              <img 
+                src={customLogo} 
+                alt="Logo" 
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain shrink-0"
+              />
+            )}
+            <div className="flex flex-col min-w-0">
+              <h1 className="text-base sm:text-xl text-[#0f766e] leading-tight truncate">{businessName}</h1>
+              <p className="text-xs text-gray-600 hidden sm:block truncate">{tagline}</p>
             </div>
           </div>
           
-          {/* Navigation Buttons - Removed Admin button */}
-          <div className="flex gap-3 relative z-50">
+          {/* Desktop Navigation Buttons */}
+          <div className="hidden md:flex gap-3 relative z-50">
             {/* Cart Button */}
             <button
               onClick={() => setCartOpen(true)}
@@ -219,6 +234,79 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
               </svg>
               <span className="text-sm text-[#1a237e]">Track Order</span>
             </button>
+          </div>
+
+          {/* Mobile Navigation - Cart + Hamburger Menu */}
+          <div className="flex md:hidden gap-2 items-center shrink-0">
+            {/* Cart Button (Mobile) */}
+            <button
+              onClick={() => setCartOpen(true)}
+              className="bg-[rgb(3,187,154)] h-9 w-9 rounded-md border border-[rgba(0,166,244,0.2)] shadow-sm hover:shadow-md transition-shadow flex items-center justify-center relative"
+            >
+              <ShoppingCart className="w-5 h-5 text-[#1A237E]" />
+              {getTotalItems() > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {getTotalItems()}
+                </span>
+              )}
+            </button>
+
+            {/* Hamburger Menu */}
+            <Sheet>
+              <SheetTrigger asChild>
+                <button className="bg-white h-9 w-9 rounded-md border border-gray-300 shadow-sm hover:shadow-md transition-shadow flex items-center justify-center">
+                  <MenuIcon className="w-5 h-5 text-[#1A237E]" />
+                </button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[280px] sm:w-[320px]" aria-describedby="mobile-menu-description">
+                <SheetHeader>
+                  <SheetTitle className="text-[#0f766e]">Menu</SheetTitle>
+                </SheetHeader>
+                <span id="mobile-menu-description" className="sr-only">Navigation menu and order tracking</span>
+                <div className="flex flex-col gap-3 mt-6">
+                  {/* Track Order */}
+                  <button
+                    onClick={onOpenCustomerPortal}
+                    className="bg-white h-12 rounded-lg border border-[rgba(233,30,99,0.2)] shadow-sm hover:shadow-md transition-shadow flex items-center gap-3 px-4 w-full"
+                  >
+                    <Package className="w-5 h-5 text-[#1A237E]" />
+                    <span className="text-[#1a237e]">Track My Order</span>
+                  </button>
+
+                  {/* Quick Nav */}
+                  <div className="border-t border-gray-200 pt-3 mt-3 space-y-2">
+                    <button
+                      onClick={() => {
+                        setActiveTab('menu');
+                        // Close the sheet
+                        document.body.click();
+                      }}
+                      className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
+                    >
+                      Menu
+                    </button>
+                    <button
+                      onClick={() => {
+                        setActiveTab('gallery');
+                        document.body.click();
+                      }}
+                      className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
+                    >
+                      Gallery
+                    </button>
+                    <button
+                      onClick={() => {
+                        setActiveTab('faq');
+                        document.body.click();
+                      }}
+                      className="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
+                    >
+                      FAQ & Info
+                    </button>
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>
@@ -255,28 +343,28 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
 
       {/* Main Content */}
       <div className="bg-gray-50 min-h-screen">
-        <div className="max-w-7xl mx-auto px-8 pt-12 pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-8 sm:pt-12 pb-20">
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="flex justify-center mb-10">
+            <div className="flex justify-center mb-6 sm:mb-10">
               <TabsList className="bg-white border border-gray-200 p-1 rounded-lg h-10 grid grid-cols-3 w-fit shadow-sm">
                 <TabsTrigger
                   value="menu"
-                  className="data-[state=active]:bg-[#0f766e] data-[state=active]:text-white rounded-md h-8 px-6 text-sm text-gray-700 transition-all"
+                  className="data-[state=active]:bg-[#0f766e] data-[state=active]:text-white rounded-md h-8 px-4 sm:px-6 text-sm text-gray-700 transition-all"
                 >
                   Menu
                 </TabsTrigger>
                 <TabsTrigger
                   value="gallery"
-                  className="data-[state=active]:bg-[#0f766e] data-[state=active]:text-white rounded-md h-8 px-6 text-sm text-gray-700 transition-all"
+                  className="data-[state=active]:bg-[#0f766e] data-[state=active]:text-white rounded-md h-8 px-4 sm:px-6 text-sm text-gray-700 transition-all"
                 >
                   Gallery
                 </TabsTrigger>
                 <TabsTrigger
                   value="faq"
-                  className="data-[state=active]:bg-[#0f766e] data-[state=active]:text-white rounded-md h-8 px-6 text-sm text-gray-700 transition-all"
+                  className="data-[state=active]:bg-[#0f766e] data-[state=active]:text-white rounded-md h-8 px-4 sm:px-6 text-sm text-gray-700 transition-all"
                 >
-                  FAQ & Info
+                  FAQ
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -360,18 +448,28 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
             {/* Gallery Tab */}
             <TabsContent value="gallery">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {gallery.map(image => (
-                  <Card key={image.id} className="overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow">
+                {gallery.map(item => (
+                  <Card key={item.id} className="overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow">
                     <div className="relative h-64 bg-gray-100">
-                      <ImageWithFallback
-                        src={image.url}
-                        alt={image.caption}
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
+                      {item.type === 'video' ? (
+                        <video
+                          src={item.url}
+                          className="absolute inset-0 w-full h-full object-cover"
+                          controls
+                          playsInline
+                          preload="metadata"
+                        />
+                      ) : (
+                        <ImageWithFallback
+                          src={item.url}
+                          alt={item.caption}
+                          className="absolute inset-0 w-full h-full object-cover"
+                        />
+                      )}
                     </div>
-                    {image.caption && (
+                    {item.caption && (
                       <div className="p-4">
-                        <p className="text-sm text-gray-700">{image.caption}</p>
+                        <p className="text-sm text-gray-700">{item.caption}</p>
                       </div>
                     )}
                   </Card>
@@ -379,7 +477,7 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
               </div>
               {gallery.length === 0 && (
                 <div className="text-center py-12">
-                  <p className="text-gray-500">No gallery images yet</p>
+                  <p className="text-gray-500">No gallery items yet</p>
                 </div>
               )}
             </TabsContent>

@@ -52,9 +52,9 @@ export function OrdersPanel({ accessToken, onPendingCountChange }: OrdersPanelPr
       if (result.orders) {
         setOrders(result.orders);
         
-        // Count pending orders and notify parent
+        // Count only pending (new/unacknowledged) orders and notify parent
         const pendingCount = result.orders.filter(
-          (order: Order) => order.status === 'pending' || order.status === 'confirmed'
+          (order: Order) => order.status === 'pending'
         ).length;
         
         if (onPendingCountChange) {
@@ -191,7 +191,7 @@ export function OrdersPanel({ accessToken, onPendingCountChange }: OrdersPanelPr
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center bg-[rgba(0,0,0,0.06)] pt-[0px] pr-[0px] pb-[0px] pl-[11px] rounded-[9px]">
         <h2>Orders</h2>
         <Select value={filter} onValueChange={setFilter}>
           <SelectTrigger className="w-48">
@@ -223,16 +223,22 @@ export function OrdersPanel({ accessToken, onPendingCountChange }: OrdersPanelPr
                 <div className="flex justify-between items-start">
                   <div className="space-y-1">
                     <CardTitle>{order.customerName}</CardTitle>
-                    <div className="flex gap-4 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
+                    <div className="flex flex-col gap-1 text-sm text-muted-foreground">
+                      <a 
+                        href={`tel:${order.phone}`}
+                        className="flex items-center gap-1 hover:text-primary transition-colors cursor-pointer"
+                      >
                         <Phone className="w-3 h-3" />
                         {order.phone}
-                      </span>
+                      </a>
                       {order.email && (
-                        <span className="flex items-center gap-1">
+                        <a
+                          href={`mailto:${order.email}`}
+                          className="flex items-center gap-1 hover:text-primary transition-colors cursor-pointer"
+                        >
                           <Mail className="w-3 h-3" />
                           {order.email}
-                        </span>
+                        </a>
                       )}
                     </div>
                   </div>
