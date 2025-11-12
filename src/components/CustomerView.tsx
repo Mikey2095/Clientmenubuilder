@@ -174,9 +174,9 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
   const customLogo = branding.logo;
   const carouselImages = branding.carouselImages || (heroImage ? [heroImage] : []);
   
-  // Floral decorations - connected to GitHub static assets
-  const floralTopLeft = 'floral-top-left.png';
-  const floralTopRight = 'floral-top-right.png';
+  // Floral decorations - connected to GitHub static assets in public folder
+  const floralTopLeft = '/floral-top-left.png';
+  const floralTopRight = '/floral-top-right.png';
 
   return (
     <div className="bg-white relative min-h-screen">
