@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from './ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
@@ -272,11 +272,11 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
                   <MenuIcon className="w-5 h-5 text-[#1A237E]" />
                 </button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[280px] sm:w-[320px]" aria-describedby="mobile-menu-description">
+              <SheetContent side="right" className="w-[280px] sm:w-[320px]">
                 <SheetHeader>
                   <SheetTitle className="text-[#0f766e]">Menu</SheetTitle>
+                  <SheetDescription className="sr-only">Navigation menu and order tracking</SheetDescription>
                 </SheetHeader>
-                <span id="mobile-menu-description" className="sr-only">Navigation menu and order tracking</span>
                 <div className="flex flex-col gap-3 mt-6">
                   {/* Track Order */}
                   <button
