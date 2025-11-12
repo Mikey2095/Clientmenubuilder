@@ -174,7 +174,7 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
   const customLogo = branding.logo;
   const carouselImages = branding.carouselImages || (heroImage ? [heroImage] : []);
   
-  // Floral decorations
+  // Floral decorations - connected to GitHub static assets
   const floralTopLeft = 'floral-top-left.png';
   const floralTopRight = 'floral-top-right.png';
 
@@ -321,18 +321,24 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
         )}
         
         {/* Top Left Floral Decoration - Flush to top, overlaid on carousel */}
-        <img 
-          src={floralTopLeft} 
-          alt="" 
-          className="absolute top-0 left-0 w-80 h-73 object-contain pointer-events-none z-20"
-        />
+        {floralTopLeft && (
+          <img 
+            src={floralTopLeft} 
+            alt="" 
+            className="absolute top-0 left-0 w-80 h-73 object-contain pointer-events-none z-20"
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+          />
+        )}
         
         {/* Top Right Floral Decoration - Flush to top, overlaid on carousel */}
-        <img 
-          src={floralTopRight} 
-          alt="" 
-          className="absolute top-0 right-0 w-80 h-73 object-contain pointer-events-none z-20"
-        />
+        {floralTopRight && (
+          <img 
+            src={floralTopRight} 
+            alt="" 
+            className="absolute top-0 right-0 w-80 h-73 object-contain pointer-events-none z-20"
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+          />
+        )}
         
         {/* Text Overlay */}
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-8 z-30 bg-black/30">
