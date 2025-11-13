@@ -17,12 +17,16 @@ export function ColorThemeEditor({ accessToken }: ColorThemeEditorProps) {
     accentColor: '#FF6B35',
   });
   const [saving, setSaving] = useState(false);
+  const [existingBranding, setExistingBranding] = useState<any>({});
 
   useEffect(() => {
     const fetchBranding = async () => {
       try {
         const result = await getBranding();
         if (result.branding) {
+          // Store the entire branding object for later use
+          setExistingBranding(result.branding);
+          
           setColors({
             primaryColor: result.branding.primaryColor || '#E91E63',
             secondaryColor: result.branding.secondaryColor || '#1A237E',
@@ -60,22 +64,38 @@ export function ColorThemeEditor({ accessToken }: ColorThemeEditorProps) {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const brandingResult = await getBranding();
-      const existingBranding = brandingResult.branding || {};
+      console.log('=== SAVING COLOR THEME ===');
+      console.log('Access token present:', accessToken ? 'YES' : 'NO');
+      console.log('Current colors:', colors);
+      console.log('Existing branding:', existingBranding);
       
-      await saveBranding(
-        {
-          ...existingBranding,
-          ...colors,
-        },
-        accessToken
-      );
+      const dataToSave = {
+        ...existingBranding,
+        ...colors,
+      };
       
-      applyColors(colors.primaryColor, colors.secondaryColor, colors.accentColor);
-      toast.success('Color theme updated successfully!');
+      console.log('Data being saved:', dataToSave);
+      
+      const result = await saveBranding(dataToSave, accessToken);
+      
+      console.log('Save result:', result);
+      
+      if (result.error) {
+        console.error('Error from server:', result.error);
+        toast.error(`Failed to save color theme: ${result.error}`);
+      } else {
+        // Update the stored branding with the new values
+        setExistingBranding(dataToSave);
+        
+        // Apply colors to CSS variables
+        applyColors(colors.primaryColor, colors.secondaryColor, colors.accentColor);
+        
+        console.log('✓ Color theme saved and applied successfully');
+        toast.success('Color theme updated successfully!');
+      }
     } catch (error) {
-      console.log('Error saving colors:', error);
-      toast.error('Failed to save color theme');
+      console.error('Error saving colors:', error);
+      toast.error(`Failed to save color theme: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setSaving(false);
     }

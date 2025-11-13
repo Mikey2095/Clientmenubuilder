@@ -89,11 +89,21 @@ export function MenuManagement({ accessToken }: MenuManagementProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await saveMenuItem(formData, accessToken);
-      fetchMenu();
-      setDialogOpen(false);
+      console.log('Saving menu item with token:', accessToken ? 'Token present' : 'NO TOKEN!');
+      console.log('Menu item data:', formData);
+      const result = await saveMenuItem(formData, accessToken);
+      console.log('Save menu result:', result);
+      
+      if (result.error) {
+        console.error('Save error from server:', result.error);
+        alert(`Failed to save menu item: ${result.error}`);
+      } else {
+        fetchMenu();
+        setDialogOpen(false);
+      }
     } catch (error) {
-      console.log('Error saving menu item:', error);
+      console.error('Error saving menu item:', error);
+      alert(`Error saving menu item: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 

@@ -715,19 +715,27 @@ app.get('/make-server-e4f342e1/branding', async (c) => {
 // Update branding (admin only)
 app.post('/make-server-e4f342e1/branding', async (c) => {
   try {
+    console.log('=== BRANDING SAVE REQUEST ===');
     const accessToken = c.req.header('Authorization')?.split(' ')[1];
+    console.log('Token present:', accessToken ? 'YES' : 'NO');
+    
     const { data: { user }, error: authError } = await supabase.auth.getUser(accessToken);
 
     if (!user || authError) {
+      console.log('Auth error:', authError);
       return c.json({ error: 'Unauthorized - Admin access required' }, 401);
     }
 
+    console.log('Authenticated user:', user.id);
     const branding = await c.req.json();
+    console.log('Branding data received:', branding);
+    
     await kv.set('branding_settings', branding);
+    console.log('✓ Branding saved successfully to KV store');
 
-    return c.json({ success: true });
+    return c.json({ success: true, branding });
   } catch (error) {
-    console.log('Error saving branding:', error);
+    console.error('Error saving branding:', error);
     return c.json({ error: 'Failed to save branding' }, 500);
   }
 });

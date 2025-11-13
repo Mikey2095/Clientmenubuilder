@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getBranding, saveBranding, uploadGalleryFile } from '../utils/api';
+import { getBranding, saveBranding } from '../utils/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -28,10 +28,8 @@ export function BrandingPanel({ accessToken }: BrandingPanelProps) {
     instagramUrl: '',
     googleReviewUrl: '',
     yelpUrl: '',
-    menuIcon: '',
   });
   const [saving, setSaving] = useState(false);
-  const [uploadingIcon, setUploadingIcon] = useState(false);
 
   useEffect(() => {
     const fetchBranding = async () => {
@@ -51,53 +49,22 @@ export function BrandingPanel({ accessToken }: BrandingPanelProps) {
     e.preventDefault();
     setSaving(true);
     try {
-      await saveBranding(formData, accessToken);
-      toast.success('Branding saved successfully!');
-    } catch (error) {
-      console.log('Error saving branding:', error);
-      toast.error('Failed to save branding');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleIconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setUploadingIcon(true);
-      toast.info('Uploading icon...');
-      console.log('Starting icon upload:', file.name, file.type, file.size);
+      console.log('Saving branding with token:', accessToken ? 'Token present' : 'NO TOKEN!');
+      console.log('Branding data:', formData);
+      const result = await saveBranding(formData, accessToken);
+      console.log('Save result:', result);
       
-      const result = await uploadGalleryFile(file, 'Menu Icon', accessToken);
-      console.log('Upload result:', result);
-      
-      if (result.url) {
-        const updatedFormData = { ...formData, menuIcon: result.url };
-        setFormData(updatedFormData);
-        toast.success('Icon uploaded successfully!');
-        
-        // Auto-save the branding after successful upload
-        try {
-          await saveBranding(updatedFormData, accessToken);
-          toast.success('Icon saved to branding!');
-        } catch (saveError) {
-          console.error('Error auto-saving branding:', saveError);
-          toast.error('Icon uploaded but failed to save. Please click Save Branding.');
-        }
-      } else if (result.error) {
-        console.error('Upload error from server:', result.error);
-        toast.error(`Failed to upload icon: ${result.error}`);
+      if (result.error) {
+        console.error('Save error from server:', result.error);
+        toast.error(`Failed to save branding: ${result.error}`);
       } else {
-        console.error('Unexpected response:', result);
-        toast.error('Failed to upload icon - unexpected response');
+        toast.success('Branding saved successfully!');
       }
     } catch (error) {
-      console.error('Error uploading icon:', error);
-      toast.error(`Error uploading icon: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('Error saving branding:', error);
+      toast.error(`Failed to save branding: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
-      setUploadingIcon(false);
+      setSaving(false);
     }
   };
 
@@ -257,41 +224,6 @@ export function BrandingPanel({ accessToken }: BrandingPanelProps) {
                   placeholder="https://yelp.com/biz/..."
                 />
               </div>
-            </div>
-
-            <Separator />
-
-            <div className="space-y-2">
-              <Label htmlFor="menuIcon">Menu Icon/Logo</Label>
-              <p className="text-sm text-gray-500">Upload a skull icon or logo for the header (recommended size: 48x48px)</p>
-              
-              {/* File Upload Button */}
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => document.getElementById('iconUploadInput')?.click()}
-                  disabled={uploadingIcon}
-                  className="w-full"
-                >
-                  {uploadingIcon ? 'Uploading...' : 'Choose File'}
-                </Button>
-                <input
-                  id="iconUploadInput"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleIconUpload}
-                  className="hidden"
-                />
-              </div>
-
-              {/* Preview */}
-              {formData.menuIcon && (
-                <div className="mt-3 p-3 border border-gray-200 rounded-lg bg-gray-50">
-                  <p className="text-xs text-gray-600 mb-2">Current Icon:</p>
-                  <img src={formData.menuIcon} alt="Menu icon preview" className="h-12 w-12 object-contain" />
-                </div>
-              )}
             </div>
 
             <Button type="submit" disabled={saving} className="w-full">

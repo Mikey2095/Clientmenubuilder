@@ -336,7 +336,6 @@ export function OrdersPanel({ accessToken, onPendingCountChange }: OrdersPanelPr
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="pending">Pending</SelectItem>
                         <SelectItem value="confirmed">Confirmed</SelectItem>
                         <SelectItem value="preparing">Preparing</SelectItem>
                         <SelectItem value="ready">Ready</SelectItem>
@@ -345,13 +344,25 @@ export function OrdersPanel({ accessToken, onPendingCountChange }: OrdersPanelPr
                       </SelectContent>
                     </Select>
 
+                    {order.phone && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-48"
+                        onClick={() => window.location.href = `tel:${order.phone}`}
+                      >
+                        <MessageSquare className="w-4 h-4 mr-2" />
+                        Contact Customer
+                      </Button>
+                    )}
+
                     <Select
                       onValueChange={(value) => value && openMessageDialog(order, value)}
                     >
                       <SelectTrigger className="w-48">
                         <div className="flex items-center gap-2">
                           <MessageSquare className="w-4 h-4" />
-                          <span>Contact Customer</span>
+                          <span>Send Message</span>
                         </div>
                       </SelectTrigger>
                       <SelectContent>
