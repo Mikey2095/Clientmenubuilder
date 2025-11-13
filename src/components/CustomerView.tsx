@@ -4,14 +4,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
-import { ShoppingCart, Package, Menu as MenuIcon } from 'lucide-react';
+import { ShoppingCart, Package, Menu as MenuIcon, Settings } from 'lucide-react';
 import { getMenu, getBranding, getGallery, placeOrder } from '../utils/api';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { CartDrawer } from './CartDrawer';
 import { CheckoutDialog } from './CheckoutDialog';
 import { FAQSection } from './FAQSection';
 import { toast } from 'sonner@2.0.3';
-import svgPaths from '../imports/svg-2gjo4daah7';
 import { HeroCarousel } from './HeroCarousel';
 // Import floral decoration images
 import floralTopLeft from '../images/floral-top-left.png';
@@ -219,18 +218,7 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
               onClick={() => setCartOpen(true)}
               className="bg-[rgb(3,187,154)] h-8 rounded-md border border-[rgba(0,166,244,0.2)] shadow-sm hover:shadow-md transition-shadow flex items-center justify-center gap-1.5 px-3 text-[#1A237E]"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16">
-                <g clipPath="url(#clip0_cart)">
-                  <path d={svgPaths.p22b32180} stroke="#1A237E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                  <path d={svgPaths.pceec000} stroke="#1A237E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                  <path d={svgPaths.p2ecc1400} stroke="#1A237E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                </g>
-                <defs>
-                  <clipPath id="clip0_cart">
-                    <rect fill="#1A237E" height="16" width="16" />
-                  </clipPath>
-                </defs>
-              </svg>
+              <ShoppingCart className="w-4 h-4 text-[#1A237E]" />
               <span className="text-sm text-[#1A237E]">({getTotalItems()})</span>
               <span className="text-sm text-[#1A237E]">Cart</span>
             </button>
@@ -240,12 +228,7 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
               onClick={onOpenCustomerPortal}
               className="bg-white h-8 rounded-md border border-[rgba(233,30,99,0.2)] shadow-sm hover:shadow-md transition-shadow flex items-center justify-center gap-2 px-3"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16">
-                <g>
-                  <path d={svgPaths.p399eca00} stroke="#1A237E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                  <path d={svgPaths.pc93b400} stroke="#1A237E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                </g>
-              </svg>
+              <Package className="w-4 h-4 text-[#1A237E]" />
               <span className="text-sm text-[#1a237e]">Track Order</span>
             </button>
           </div>
@@ -538,12 +521,7 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
                 onClick={onOpenAdmin}
                 className="bg-white h-8 rounded-md border border-[rgba(233,30,99,0.2)] shadow-sm hover:shadow-md transition-shadow flex items-center justify-center gap-2 px-3"
               >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16">
-                  <g>
-                    <path d={svgPaths.p14890d00} stroke="#1A237E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                    <path d={svgPaths.p28db2b80} stroke="#1A237E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                  </g>
-                </svg>
+                <Settings className="w-4 h-4 text-[#1A237E]" />
                 <span className="text-sm text-[#1a237e]">Admin</span>
               </button>
             )}
