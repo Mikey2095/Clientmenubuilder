@@ -53,12 +53,20 @@ export function MenuManagement({ accessToken }: MenuManagementProps) {
 
   const fetchMenu = async () => {
     try {
+      console.log('🔍 [ADMIN] Fetching menu items from API...');
       const result = await getMenu();
+      console.log('📦 [ADMIN] API Response:', result);
+      
       if (result.items) {
+        console.log('✅ [ADMIN] Menu items received:', result.items.length, 'items');
+        console.log('📋 [ADMIN] All items:', result.items);
+        console.log('📂 [ADMIN] Categories in items:', [...new Set(result.items.map((item: MenuItem) => item.category))]);
         setMenuItems(result.items);
+      } else {
+        console.log('⚠️ [ADMIN] No items found in API response');
       }
     } catch (error) {
-      console.log('Error fetching menu:', error);
+      console.log('❌ [ADMIN] Error fetching menu:', error);
       toast.error('Failed to load menu items');
     }
   };
@@ -171,6 +179,11 @@ export function MenuManagement({ accessToken }: MenuManagementProps) {
     return acc;
   }, {} as Record<string, MenuItem[]>);
 
+  // Get all categories that have items (includes orphaned categories from old items)
+  const allCategoriesWithItems = Object.keys(groupedItems);
+  console.log('📂 [ADMIN] All categories with items:', allCategoriesWithItems);
+  console.log('📂 [ADMIN] Predefined categories:', categories);
+
   const handleOpenCategoryDialog = () => {
     setEditingCategoryIndex(null);
     setCategoryEditValue('');
@@ -268,9 +281,18 @@ export function MenuManagement({ accessToken }: MenuManagementProps) {
         </Card>
       ) : (
         <div className="space-y-6">
-          {categories.filter(cat => groupedItems[cat]).map((category) => (
+          {/* Show ALL categories that have items, not just predefined ones */}
+          {allCategoriesWithItems.map((category) => (
             <div key={category}>
-              <h3 className="mb-4">{category}</h3>
+              <div className="flex items-center gap-2 mb-4">
+                <h3>{category}</h3>
+                {/* Badge to show if category is not in predefined list */}
+                {!categories.includes(category) && (
+                  <Badge variant="outline" className="text-xs">
+                    Orphaned - Consider updating category
+                  </Badge>
+                )}
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {groupedItems[category].map((item) => (
                   <Card key={item.id}>
