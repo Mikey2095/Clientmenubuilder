@@ -1642,10 +1642,6 @@
     object-fit: cover;
   }
 
-  .object-fill {
-    object-fit: fill;
-  }
-
   .p-0 {
     padding: calc(var(--spacing) * 0);
   }
@@ -2186,6 +2182,12 @@
     user-select: none;
   }
 
+  @media (hover: hover) {
+    .group-hover\:text-white:is(:where(.group):hover *) {
+      color: var(--color-white);
+    }
+  }
+
   .group-data-\[disabled\=true\]\:pointer-events-none:is(:where(.group)[data-disabled="true"] *) {
     pointer-events: none;
   }
@@ -2264,6 +2266,12 @@
   @media (hover: hover) {
     .hover\:bg-\[\#0d9488\]:hover {
       background-color: #0d9488;
+    }
+  }
+
+  @media (hover: hover) {
+    .hover\:bg-\[\#0f766e\]:hover {
+      background-color: #0f766e;
     }
   }
 

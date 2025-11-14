@@ -4,8 +4,14 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { Button } from './ui/button';
 
+interface GalleryItem {
+  url: string;
+  type?: 'image' | 'video';
+  caption?: string;
+}
+
 interface HeroCarouselProps {
-  images: string[];
+  images: (string | GalleryItem)[];
   autoPlayInterval?: number;
 }
 
@@ -41,9 +47,14 @@ export function HeroCarousel({ images, autoPlayInterval = 4000 }: HeroCarouselPr
     );
   }
 
+  const currentItem = images[currentIndex];
+  const isGalleryItem = typeof currentItem === 'object' && 'url' in currentItem;
+  const itemUrl = isGalleryItem ? currentItem.url : currentItem;
+  const itemType = isGalleryItem ? currentItem.type : 'image';
+
   return (
     <div className="relative h-96 overflow-hidden">
-      {/* Carousel Images */}
+      {/* Carousel Images/Videos */}
       <AnimatePresence mode="wait">
         <motion.div
           key={currentIndex}
@@ -53,11 +64,22 @@ export function HeroCarousel({ images, autoPlayInterval = 4000 }: HeroCarouselPr
           transition={{ duration: 0.5 }}
           className="absolute inset-0"
         >
-          <ImageWithFallback
-            src={images[currentIndex]}
-            alt={`Slide ${currentIndex + 1}`}
-            className="w-full h-96 object-fill"
-          />
+          {itemType === 'video' ? (
+            <video
+              src={itemUrl}
+              className="w-full h-96 object-cover"
+              autoPlay
+              muted
+              loop
+              playsInline
+            />
+          ) : (
+            <ImageWithFallback
+              src={itemUrl}
+              alt={`Slide ${currentIndex + 1}`}
+              className="w-full h-96 object-cover"
+            />
+          )}
         </motion.div>
       </AnimatePresence>
 

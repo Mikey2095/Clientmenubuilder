@@ -18,7 +18,7 @@ interface MenuItem {
   description: string;
   price: number;
   category: string;
-  image?: string;
+  imageUrl?: string;
   isSpecial: boolean;
   specialDays: string[];
   available: boolean;
@@ -45,7 +45,7 @@ export function MenuManagement({ accessToken }: MenuManagementProps) {
     description: '',
     price: 0,
     category: 'Tacos',
-    image: '',
+    imageUrl: '',
     isSpecial: false,
     specialDays: [],
     available: true,
@@ -112,7 +112,7 @@ export function MenuManagement({ accessToken }: MenuManagementProps) {
         description: '',
         price: 0,
         category: 'Tacos',
-        image: '',
+        imageUrl: '',
         isSpecial: false,
         specialDays: [],
         available: true,
@@ -237,7 +237,7 @@ export function MenuManagement({ accessToken }: MenuManagementProps) {
       const result = await uploadGalleryFile(file, formData.name || 'Menu item', accessToken);
       
       if (result.url) {
-        setFormData({ ...formData, image: result.url });
+        setFormData({ ...formData, imageUrl: result.url });
         toast.success('Image uploaded successfully!');
       } else {
         toast.error('Failed to upload image');
@@ -393,9 +393,9 @@ export function MenuManagement({ accessToken }: MenuManagementProps) {
                 disabled={uploading}
                 onChange={handleImageUpload}
               />
-              {formData.image && (
+              {formData.imageUrl && (
                 <div className="mt-2">
-                  <img src={formData.image} alt="Preview" className="max-w-xs rounded-md" />
+                  <img src={formData.imageUrl} alt="Preview" className="max-w-xs rounded-md" />
                   <p className="text-xs text-muted-foreground mt-1">Current image</p>
                 </div>
               )}

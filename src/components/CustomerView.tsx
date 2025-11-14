@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/tabs';
-import { ShoppingCart, Package, Menu as MenuIcon, Settings } from 'lucide-react';
+import { ShoppingCart, Package, Menu as MenuIcon, Settings, Facebook, Instagram, Star, MessageCircle } from 'lucide-react';
 import { getMenu, getBranding, getGallery, placeOrder } from '../utils/api';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { CartDrawer } from './CartDrawer';
@@ -46,6 +46,10 @@ export interface Branding {
   heroImage?: string;
   carouselImages?: string[]; // Array of image/video URLs for carousel
   menuIcon?: string; // URL for the uploaded skull icon
+  facebookUrl?: string;
+  instagramUrl?: string;
+  googleReviewUrl?: string;
+  yelpUrl?: string;
 }
 
 interface GalleryImage {
@@ -175,7 +179,11 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
   const tagline = branding.tagline || 'Authentic Mexican Cuisine';
   const heroImage = branding.heroImage;
   const customLogo = branding.menuIcon || branding.logo; // Use menuIcon (uploaded skull) or fallback to logo
-  const carouselImages = branding.carouselImages || (heroImage ? [heroImage] : []);
+  
+  // Combine carousel images and gallery images for the hero carousel
+  const brandingCarouselImages = branding.carouselImages || (heroImage ? [heroImage] : []);
+  const galleryCarouselItems = gallery.map(item => ({ url: item.url, type: item.type }));
+  const carouselImages = [...brandingCarouselImages, ...galleryCarouselItems];
   
   return (
     <div className="bg-white relative min-h-screen">
@@ -492,21 +500,74 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
         />
         
         <div className="max-w-7xl mx-auto px-8 relative z-10">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-600">
-              © 2024 {businessName}. All rights reserved.
-            </p>
-            
-            {/* Admin Button in Footer */}
-            {onOpenAdmin && (
-              <button
-                onClick={onOpenAdmin}
-                className="bg-white h-8 rounded-md border border-[rgba(233,30,99,0.2)] shadow-sm hover:shadow-md transition-shadow flex items-center justify-center gap-2 px-3"
-              >
-                <Settings className="w-4 h-4 text-[#1A237E]" />
-                <span className="text-sm text-[#1a237e]">Admin</span>
-              </button>
+          <div className="flex flex-col gap-4">
+            {/* Social Media Icons */}
+            {(branding.facebookUrl || branding.instagramUrl || branding.googleReviewUrl || branding.yelpUrl) && (
+              <div className="flex justify-center gap-4">
+                {branding.facebookUrl && (
+                  <a
+                    href={branding.facebookUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full bg-gray-100 hover:bg-[#0f766e] flex items-center justify-center transition-colors group"
+                    aria-label="Facebook"
+                  >
+                    <Facebook className="w-5 h-5 text-gray-600 group-hover:text-white transition-colors" />
+                  </a>
+                )}
+                {branding.instagramUrl && (
+                  <a
+                    href={branding.instagramUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full bg-gray-100 hover:bg-[#0f766e] flex items-center justify-center transition-colors group"
+                    aria-label="Instagram"
+                  >
+                    <Instagram className="w-5 h-5 text-gray-600 group-hover:text-white transition-colors" />
+                  </a>
+                )}
+                {branding.googleReviewUrl && (
+                  <a
+                    href={branding.googleReviewUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full bg-gray-100 hover:bg-[#0f766e] flex items-center justify-center transition-colors group"
+                    aria-label="Google Reviews"
+                  >
+                    <Star className="w-5 h-5 text-gray-600 group-hover:text-white transition-colors" />
+                  </a>
+                )}
+                {branding.yelpUrl && (
+                  <a
+                    href={branding.yelpUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full bg-gray-100 hover:bg-[#0f766e] flex items-center justify-center transition-colors group"
+                    aria-label="Yelp"
+                  >
+                    <MessageCircle className="w-5 h-5 text-gray-600 group-hover:text-white transition-colors" />
+                  </a>
+                )}
+              </div>
             )}
+            
+            {/* Copyright and Admin */}
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-gray-600">
+                © 2024 {businessName}. All rights reserved.
+              </p>
+              
+              {/* Admin Button in Footer */}
+              {onOpenAdmin && (
+                <button
+                  onClick={onOpenAdmin}
+                  className="bg-white h-8 rounded-md border border-[rgba(233,30,99,0.2)] shadow-sm hover:shadow-md transition-shadow flex items-center justify-center gap-2 px-3"
+                >
+                  <Settings className="w-4 h-4 text-[#1A237E]" />
+                  <span className="text-sm text-[#1a237e]">Admin</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
