@@ -1706,6 +1706,10 @@
     padding-inline: calc(var(--spacing) * 8);
   }
 
+  .px-\[22px\] {
+    padding-inline: 22px;
+  }
+
   .px-\[30px\] {
     padding-inline: 30px;
   }
@@ -1744,6 +1748,10 @@
 
   .py-12 {
     padding-block: calc(var(--spacing) * 12);
+  }
+
+  .py-\[6px\] {
+    padding-block: 6px;
   }
 
   .pt-0 {

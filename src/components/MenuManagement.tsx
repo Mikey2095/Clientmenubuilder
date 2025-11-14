@@ -59,11 +59,46 @@ export function MenuManagement({ accessToken }: MenuManagementProps) {
       }
     } catch (error) {
       console.log('Error fetching menu:', error);
+      toast.error('Failed to load menu items');
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const result = await getBranding();
+      if (result.branding?.categories && Array.isArray(result.branding.categories)) {
+        setCategories(result.branding.categories);
+      } else {
+        // If no categories in database, use defaults
+        setCategories(DEFAULT_CATEGORIES);
+      }
+    } catch (error) {
+      console.log('Error fetching categories:', error);
+      setCategories(DEFAULT_CATEGORIES);
+    }
+  };
+
+  const saveCategoriesToDatabase = async (newCategories: string[]) => {
+    try {
+      const result = await getBranding();
+      const updatedBranding = {
+        ...result.branding,
+        categories: newCategories,
+      };
+      
+      await saveBranding(updatedBranding, accessToken);
+      console.log('✓ Categories saved to database');
+      return true;
+    } catch (error) {
+      console.error('Error saving categories:', error);
+      toast.error('Failed to save categories');
+      return false;
     }
   };
 
   useEffect(() => {
     fetchMenu();
+    fetchCategories();
   }, []);
 
   const handleOpenDialog = (item?: MenuItem) => {
@@ -96,14 +131,15 @@ export function MenuManagement({ accessToken }: MenuManagementProps) {
       
       if (result.error) {
         console.error('Save error from server:', result.error);
-        alert(`Failed to save menu item: ${result.error}`);
+        toast.error(`Failed to save menu item: ${result.error}`);
       } else {
-        fetchMenu();
+        await fetchMenu();
         setDialogOpen(false);
+        toast.success(editingItem ? 'Menu item updated successfully!' : 'Menu item added successfully!');
       }
     } catch (error) {
       console.error('Error saving menu item:', error);
-      alert(`Error saving menu item: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(`Error saving menu item: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
@@ -111,9 +147,11 @@ export function MenuManagement({ accessToken }: MenuManagementProps) {
     if (confirm('Are you sure you want to delete this item?')) {
       try {
         await deleteMenuItem(id, accessToken);
-        fetchMenu();
+        await fetchMenu();
+        toast.success('Menu item deleted successfully!');
       } catch (error) {
         console.log('Error deleting menu item:', error);
+        toast.error('Failed to delete menu item');
       }
     }
   };
@@ -134,13 +172,24 @@ export function MenuManagement({ accessToken }: MenuManagementProps) {
   }, {} as Record<string, MenuItem[]>);
 
   const handleOpenCategoryDialog = () => {
+    setEditingCategoryIndex(null);
+    setCategoryEditValue('');
     setCategoryDialogOpen(true);
   };
 
-  const handleAddCategory = () => {
+  const handleAddCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (categoryEditValue.trim() && !categories.includes(categoryEditValue.trim())) {
-      setCategories([...categories, categoryEditValue.trim()]);
-      setCategoryEditValue('');
+      const newCategories = [...categories, categoryEditValue.trim()];
+      setCategories(newCategories);
+      const saved = await saveCategoriesToDatabase(newCategories);
+      if (saved) {
+        toast.success('Category added successfully!');
+        setCategoryEditValue('');
+        setCategoryDialogOpen(false);
+      }
+    } else if (categories.includes(categoryEditValue.trim())) {
+      toast.error('Category already exists!');
     }
   };
 
@@ -150,20 +199,32 @@ export function MenuManagement({ accessToken }: MenuManagementProps) {
     handleOpenCategoryDialog();
   };
 
-  const handleSaveCategory = () => {
+  const handleSaveCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (editingCategoryIndex !== null && categoryEditValue.trim()) {
       const newCategories = [...categories];
       newCategories[editingCategoryIndex] = categoryEditValue.trim();
       setCategories(newCategories);
-      setEditingCategoryIndex(null);
-      setCategoryEditValue('');
+      const saved = await saveCategoriesToDatabase(newCategories);
+      if (saved) {
+        toast.success('Category updated successfully!');
+        setEditingCategoryIndex(null);
+        setCategoryEditValue('');
+        setCategoryDialogOpen(false);
+      }
     }
   };
 
-  const handleDeleteCategory = (index: number) => {
-    const newCategories = [...categories];
-    newCategories.splice(index, 1);
-    setCategories(newCategories);
+  const handleDeleteCategory = async (index: number) => {
+    if (confirm('Are you sure you want to delete this category?')) {
+      const newCategories = [...categories];
+      newCategories.splice(index, 1);
+      setCategories(newCategories);
+      const saved = await saveCategoriesToDatabase(newCategories);
+      if (saved) {
+        toast.success('Category deleted successfully!');
+      }
+    }
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {

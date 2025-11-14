@@ -67,12 +67,10 @@ export function AdminDashboard({ onLogout, accessToken, onPreview }: AdminDashbo
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-2 flex-wrap justify-end">
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-lg">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-lg px-[22px] py-[6px]">
                 <User className="w-4 h-4 text-gray-600" />
-                <div className="text-sm">
-                  <div className="font-medium">{userName}</div>
-                  <div className="text-xs text-muted-foreground">{getRoleDisplay()}</div>
-                </div>
+                <div className="font-medium text-sm">{userName}</div>
+                <div className="text-xs text-muted-foreground">{getRoleDisplay()}</div>
               </div>
               <Button onClick={onPreview} variant="outline" size="sm">
                 <Eye className="w-4 h-4 mr-2" />
