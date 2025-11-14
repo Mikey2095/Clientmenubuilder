@@ -152,6 +152,8 @@ export default function App() {
           key={customerViewKey}
           onOpenCustomerPortal={() => setView('customerPortal')}
           onOpenAdmin={() => setView('admin')}
+          isAdminLoggedIn={isAuthenticated}
+          onLogout={handleLogout}
         />
       ) : (
         <>

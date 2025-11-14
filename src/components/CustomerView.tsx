@@ -63,9 +63,11 @@ interface GalleryImage {
 interface CustomerViewProps {
   onOpenCustomerPortal: () => void;
   onOpenAdmin?: () => void;
+  isAdminLoggedIn?: boolean;
+  onLogout?: () => void;
 }
 
-export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerViewProps) {
+export function CustomerView({ onOpenCustomerPortal, onOpenAdmin, isAdminLoggedIn, onLogout }: CustomerViewProps) {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
@@ -85,12 +87,20 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
 
   const fetchMenuItems = async () => {
     try {
+      console.log('🔍 Fetching menu items from API...');
       const result = await getMenu();
+      console.log('📦 API Response:', result);
+      
       if (result.items) {
+        console.log('✅ Menu items received:', result.items.length, 'items');
+        console.log('📸 First item data:', result.items[0]);
+        console.log('🖼️ First item imageUrl:', result.items[0]?.imageUrl);
         setMenuItems(result.items);
+      } else {
+        console.log('⚠️ No items found in API response');
       }
     } catch (error) {
-      console.log('Error fetching menu:', error);
+      console.log('❌ Error fetching menu:', error);
     }
   };
 
@@ -552,21 +562,33 @@ export function CustomerView({ onOpenCustomerPortal, onOpenAdmin }: CustomerView
             )}
             
             {/* Copyright and Admin */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-2">
               <p className="text-sm text-gray-600">
                 © 2024 {businessName}. All rights reserved.
               </p>
               
-              {/* Admin Button in Footer */}
-              {onOpenAdmin && (
-                <button
-                  onClick={onOpenAdmin}
-                  className="bg-white h-8 rounded-md border border-[rgba(233,30,99,0.2)] shadow-sm hover:shadow-md transition-shadow flex items-center justify-center gap-2 px-3"
-                >
-                  <Settings className="w-4 h-4 text-[#1A237E]" />
-                  <span className="text-sm text-[#1a237e]">Admin</span>
-                </button>
-              )}
+              <div className="flex gap-2">
+                {/* Logout Button - Only shows if admin is logged in */}
+                {isAdminLoggedIn && onLogout && (
+                  <button
+                    onClick={onLogout}
+                    className="bg-red-50 h-8 rounded-md border border-red-200 shadow-sm hover:shadow-md hover:bg-red-100 transition-all flex items-center justify-center gap-2 px-3"
+                  >
+                    <span className="text-sm text-red-600">Logout Admin</span>
+                  </button>
+                )}
+                
+                {/* Admin Button in Footer */}
+                {onOpenAdmin && (
+                  <button
+                    onClick={onOpenAdmin}
+                    className="bg-white h-8 rounded-md border border-[rgba(233,30,99,0.2)] shadow-sm hover:shadow-md transition-shadow flex items-center justify-center gap-2 px-3"
+                  >
+                    <Settings className="w-4 h-4 text-[#1A237E]" />
+                    <span className="text-sm text-[#1a237e]">Admin</span>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
