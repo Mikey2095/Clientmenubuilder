@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Badge } from './ui/badge';
 import { createUser, getUsers, updateUser, deleteUser } from '../utils/api';
 import { UserPlus, Pencil, Trash2 } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface UserManagementProps {
   accessToken: string;

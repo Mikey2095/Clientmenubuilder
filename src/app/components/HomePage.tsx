@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import { useEffect } from 'react';
-import homeImage from '../images/logo-splash.jpg';
+const homeImage = '';
 
 interface HomePageProps {
   onEnter: () => void;

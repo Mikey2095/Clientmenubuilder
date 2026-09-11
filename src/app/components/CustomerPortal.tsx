@@ -7,7 +7,7 @@ import { getOrderByReceiptCode } from '../utils/api';
 import { ShoppingBag, ArrowLeft, MapPin, Clock } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { OrderTimeline } from './OrderTimeline';
 
 interface CustomerPortalProps {

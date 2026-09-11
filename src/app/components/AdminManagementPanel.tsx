@@ -6,7 +6,7 @@ import { Label } from './ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { getAdminCode, saveAdminCode, createAdminUser } from '../utils/api';
 import { UserPlus, Key } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface AdminManagementPanelProps {
   accessToken: string;

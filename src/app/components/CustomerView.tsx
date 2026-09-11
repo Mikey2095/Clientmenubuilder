@@ -10,11 +10,11 @@ import { ImageWithFallback } from './figma/ImageWithFallback';
 import { CartDrawer } from './CartDrawer';
 import { CheckoutDialog } from './CheckoutDialog';
 import { FAQSection } from './FAQSection';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { HeroCarousel } from './HeroCarousel';
-// Import floral decoration images
-import floralTopLeft from '../images/floral-top-left.png';
-import floralTopRight from '../images/floral-top-right.png';
+
+const floralTopLeft = '';
+const floralTopRight = '';
 
 interface MenuItem {
   id: string;
